@@ -1,3 +1,27 @@
+body {
+    height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+#display {
+    background-color: green;
+    color: white;
+    width: 320px;
+    height: 80px;
+    font-size: 40px;
+}
+
 .button-divs {
     display: flex;
 }
+
+.button-divs button {
+    height: 80px;
+    width: 80px;
+    font-size: 40px;
+}
+
