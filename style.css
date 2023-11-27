@@ -1,4 +1,10 @@
-
+body {
+  font-family: 'JetBrains Mono', monospace;
+  background-color: #ddfff7;
+  height: 100vh;
+  margin: 0;
+  display: flex;
+}
 
 
 /* CSS */
