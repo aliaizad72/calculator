@@ -6,7 +6,23 @@ body {
   display: flex;
 }
 
+#outer-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 50%;
+  height: 100%;
 
+}
+
+#calc-container {
+  background-color: #ffa69e;
+  width: 50%;
+  height: 70%;
+  padding: 20px;
+  border-radius: 20px;
+}
 /* CSS */
 /* button {
   align-items: center;
