@@ -32,7 +32,7 @@ body {
   background-color: #ddfff7;
   height: 30%;
   border-radius: 5px;
-  font-size: 36px;
+  font-size: 30px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -52,8 +52,15 @@ body {
   gap: 10px;
 }
 
+#input-display {
+  overflow: hidden;
+  text-wrap: nowrap;
+}
+
 #output-display {
   text-align: right;
+  overflow: hidden;
+  text-wrap: nowrap;
 }
 
 button {
