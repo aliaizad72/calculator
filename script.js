@@ -29,6 +29,21 @@ function deleteChar() {
     inputDisplay.textContent = inputDisplay.textContent.slice(0, inputDisplay.textContent.length - 1);
 }
 
-
 const deleteBtn = document.querySelector('#DEL');
-deleteBtn.addEventListener('click', deleteChar)
+deleteBtn.addEventListener('click', deleteChar);
+
+//PROCESSING the INPUT 
+//CREATE functions that does mathematical operations on 2 numbers
+function operate() {
+    let strInput = inputDisplay.textContent;
+    if (strInput.includes('+')) {
+        const arr = strInput.split('+');
+        const numArr = arr.map((item) => +item);
+        const result = numArr.reduce((a, b) => a + b);
+        console.log(result);
+    }
+    };
+
+const signs = ['+', '-', 'x', '/'];
+const equalBtn = document.querySelector('#equal');
+equalBtn.addEventListener('click', operate);
