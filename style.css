@@ -32,7 +32,11 @@ body {
   background-color: #ddfff7;
   height: 30%;
   border-radius: 5px;
-  font-size: 40px;
+  font-size: 36px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 0 2px;
 }
 
 #button-container {
@@ -47,7 +51,11 @@ body {
   display: flex;
   gap: 10px;
 }
-/* CSS */
+
+#output-display {
+  text-align: right;
+}
+
 button {
   width: 100px;
   align-items: center;
