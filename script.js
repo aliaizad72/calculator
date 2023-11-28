@@ -1,9 +1,9 @@
 //HANDLING the INPUT
     //OUTPUTTING the INPUT on the DISPLAY
-
 //function to CLEAR input DISPLAY
 const inputDisplay = document.querySelector('#input-display');
 const outputDisplay = document.querySelector('#output-display');
+clearInput();
 
 function clearInput () {
     inputDisplay.textContent = '';
@@ -42,20 +42,31 @@ const add = new Operation('+', (a, b) => a + b);
 const subtract = new Operation('-', (a, b) => a - b);
 const multiply = new Operation('x', (a, b) => a * b);
 const divide = new Operation('/', (a, b) => a / b);
-const operations = [add, subtract, multiply, divide];
+const operations = [multiply, divide, add, subtract];
 const equalBtn = document.querySelector('#equal');
 equalBtn.addEventListener('click', operate);
 
 //CREATE functions that does mathematical operations on 2 numbers
 function operate() {
     const inputStr = inputDisplay.textContent;
-    operations.forEach((operation) => {
-        if (inputStr.includes(operation.sign)) {
-            const inputArr = inputStr.split(operation.sign);
-            const numArr = inputArr.map((item) => +item);
-            const result = numArr.reduce(operation.fn);
-            console.log(result);
-            return result;
-        }
-    })
+    const signs = operations.map((item) => item.sign);
+    const inputArr = inputStr.split('+').join(',').split('-').join(',').split('x').join(',').split('/').join(',').split(',');
+    const numArr = inputArr.map((item) => +item);
+    //count how many times is there an operation
+    const opArr = inputStr.split('').filter((item) => signs.includes(item));
+
+    let i = 0
+    while (i < opArr.length) {
+        operations.forEach((item) => {
+            if (item.sign === opArr[i]) {
+                opFn = item.fn;
+            }
+        })
+        
+        const calcArr = [numArr[0], numArr[1]];
+        const result = calcArr.reduce(opFn);
+        numArr.splice(0, 2, result);
+        i++;
+    }
+    console.log(numArr, opArr);
 };
