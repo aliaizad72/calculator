@@ -33,17 +33,29 @@ const deleteBtn = document.querySelector('#DEL');
 deleteBtn.addEventListener('click', deleteChar);
 
 //PROCESSING the INPUT 
-//CREATE functions that does mathematical operations on 2 numbers
-function operate() {
-    let strInput = inputDisplay.textContent;
-    if (strInput.includes('+')) {
-        const arr = strInput.split('+');
-        const numArr = arr.map((item) => +item);
-        const result = numArr.reduce((a, b) => a + b);
-        console.log(result);
-    }
-    };
+function Operation(sign, fn) {
+    this.sign = sign;
+    this.fn = fn;
+};
 
-const signs = ['+', '-', 'x', '/'];
+const add = new Operation('+', (a, b) => a + b);
+const subtract = new Operation('-', (a, b) => a - b);
+const multiply = new Operation('x', (a, b) => a * b);
+const divide = new Operation('/', (a, b) => a / b);
+const operations = [add, subtract, multiply, divide];
 const equalBtn = document.querySelector('#equal');
 equalBtn.addEventListener('click', operate);
+
+//CREATE functions that does mathematical operations on 2 numbers
+function operate() {
+    const inputStr = inputDisplay.textContent;
+    operations.forEach((operation) => {
+        if (inputStr.includes(operation.sign)) {
+            const inputArr = inputStr.split(operation.sign);
+            const numArr = inputArr.map((item) => +item);
+            const result = numArr.reduce(operation.fn);
+            console.log(result);
+            return result;
+        }
+    })
+};
