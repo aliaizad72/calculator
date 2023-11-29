@@ -55,6 +55,7 @@ function operate() {
     //count how many times is there an operation
     const opArr = inputStr.split('').filter((item) => signs.includes(item));
     let opFn;
+    let aboveLoopCount = 0;
     for (i = 0; i < opArr.length; i++) {
         if (opArr.includes('x') || opArr.includes(`/`)) {
             if (opArr[i] === 'x' || opArr[i] === '/') {
@@ -68,9 +69,14 @@ function operate() {
                 const result = calcArr.reduce(opFn);
                 numArr.splice(i, 2 ,result);
                 opArr.splice(i, 1);
+                aboveLoopCount++;
                 i--; //where the magic happens
             }
         } else {
+            if (aboveLoopCount > 0) {
+                i = 0;
+                aboveLoopCount = 0;
+            }
             operations.forEach((item) => {
                 if (item.sign === opArr[i]) {
                     opFn = item.fn;
@@ -82,5 +88,5 @@ function operate() {
             numArr.splice(0, 2, result);
         }
     }
-    return numArr[0];
+    console.log( numArr[0]);
 };
