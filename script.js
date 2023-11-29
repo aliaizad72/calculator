@@ -54,19 +54,33 @@ function operate() {
     const numArr = inputArr.map((item) => +item);
     //count how many times is there an operation
     const opArr = inputStr.split('').filter((item) => signs.includes(item));
+    let opFn;
+    for (i = 0; i < opArr.length; i++) {
+        if (opArr.includes('x') || opArr.includes(`/`)) {
+            if (opArr[i] === 'x' || opArr[i] === '/') {
+                operations.forEach((item) => {
+                    if (item.sign === opArr[i]) {
+                        opFn = item.fn;
+                    }
+                })
 
-    let i = 0
-    while (i < opArr.length) {
-        operations.forEach((item) => {
-            if (item.sign === opArr[i]) {
-                opFn = item.fn;
+                const calcArr = [numArr[i], numArr[i+1]];
+                const result = calcArr.reduce(opFn);
+                numArr.splice(i, 2 ,result);
+                opArr.splice(i, 1);
+                i--; //where the magic happens
             }
-        })
-        
-        const calcArr = [numArr[0], numArr[1]];
-        const result = calcArr.reduce(opFn);
-        numArr.splice(0, 2, result);
-        i++;
+        } else {
+            operations.forEach((item) => {
+                if (item.sign === opArr[i]) {
+                    opFn = item.fn;
+                }
+            })
+            
+            const calcArr = [numArr[0], numArr[1]];
+            const result = calcArr.reduce(opFn);
+            numArr.splice(0, 2, result);
+        }
     }
-    console.log(numArr, opArr);
+    return numArr[0];
 };
