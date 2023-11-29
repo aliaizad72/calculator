@@ -49,11 +49,45 @@ equalBtn.addEventListener('click', operate);
 //CREATE functions that does mathematical operations on 2 numbers
 function operate() {
     const inputStr = inputDisplay.textContent;
+    if (inputStr.includes('(') || inputStr.includes(')')) {
+        let startInd;
+        let endInd;
+        let calcStr = '';
+        const inputArr = inputStr.split('');
+        const loopCount = inputArr.filter((item) => item === '(').length;
+
+        for (j = 0; j < loopCount; j++) {
+            if (j === 0) {
+                startInd = inputArr.indexOf('(');
+                endInd = inputArr.indexOf(')');
+                const subCalcStr = inputArr.slice(startInd+1, endInd).join('');
+                const deleteCount = inputArr.slice(startInd, endInd+1).length
+                const result = calculate(subCalcStr);
+                inputArr.splice(startInd, deleteCount, result);
+                calcStr = inputArr.join('');
+            } else {
+                const calcArr = calcStr.split('');
+                startInd = calcArr.indexOf('(');
+                endInd = calcArr.indexOf(')');
+                const subCalcStr = calcArr.slice(startInd+1, endInd).join('');
+                const deleteCount = calcArr.slice(startInd, endInd+1).length
+                const result = calculate(subCalcStr);
+                calcArr.splice(startInd, deleteCount, result);
+                calcStr = calcArr.join('');
+            }
+        }
+        console.log(calculate(calcStr));
+    } else {
+        console.log(calculate(inputStr));
+    }
+};
+
+function calculate (str) {
     const signs = operations.map((item) => item.sign);
-    const inputArr = inputStr.split('+').join(',').split('-').join(',').split('x').join(',').split('/').join(',').split(',');
+    const inputArr = str.split('+').join(',').split('-').join(',').split('x').join(',').split('/').join(',').split(',');
     const numArr = inputArr.map((item) => +item);
     //count how many times is there an operation
-    const opArr = inputStr.split('').filter((item) => signs.includes(item));
+    const opArr = str.split('').filter((item) => signs.includes(item));
     let opFn;
     let aboveLoopCount = 0;
     for (i = 0; i < opArr.length; i++) {
@@ -88,5 +122,5 @@ function operate() {
             numArr.splice(0, 2, result);
         }
     }
-    console.log( numArr[0]);
-};
+    return (numArr[0]);
+}
