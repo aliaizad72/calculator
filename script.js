@@ -84,6 +84,19 @@ function operate() {
 
 function calculate (str) {
     const signs = operations.map((item) => item.sign);
+    //check for two signs in a row
+    const strArr = str.split('');
+    strArr.forEach((item, index) => {
+        if (isNaN(+item) && (item === strArr[index + 1] || item === strArr[index - 1])) {
+            if (item != '-') {
+                strArr.splice(index, 1);
+            } else {
+                strArr.splice(index, 2, '+');
+            }
+        }
+    })
+    str = strArr.join('');
+
     //a verbose way of splitting the str argument because I dont know regex 
     const inputArr = str.split('+').join(',').split('-').join(',').split('x').join(',').split('/').join(',').split(',');
     const numArr = inputArr.map((item) => +item);
