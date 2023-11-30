@@ -119,7 +119,7 @@ function calculate (str) {
                 numArr.splice(i, 2 ,result);
                 opArr.splice(i, 1);
                 aboveLoopCount++;
-                i = i - 2; //after deleting the element of opArr above, the i value must be decremented to match the current array length; -2 because when the loop loops it adds 1 so in the end it goes back 1 step
+                i = -1; //after deleting the element of opArr above, the i value must be decremented to match the current array length; -2 because when the loop loops it adds 1 so in the end it goes back 1 step
             }
         } else {
             //because we delete multiplication and division signs from opArr, the addition or subtraction will automatically move to index 0, so we must reset the loopcount to 0
