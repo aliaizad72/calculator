@@ -1,9 +1,6 @@
-//HANDLING the INPUT
-    //OUTPUTTING the INPUT on the DISPLAY
-//function to CLEAR input DISPLAY
 const inputDisplay = document.querySelector('#input-display');
 const outputDisplay = document.querySelector('#output-display');
-clearInput();
+clearInput(); //clearing INPUT div so it does not return weird text with spaces and newlines
 
 function clearInput () {
     inputDisplay.textContent = '';
@@ -12,8 +9,6 @@ function clearInput () {
 
 const clearBtn = document.querySelector('#AC');
 clearBtn.addEventListener('click', clearInput);
-
-//function to add text to INPUT display when button is clicked
 
 const inputButtons = document.querySelectorAll('.input-buttons');
 inputButtons.forEach((button) => {
@@ -24,7 +19,6 @@ function addInput(e) {
     inputDisplay.textContent += `${e.target.textContent}`;
 }
 
-//function to delete 1 character from INPUT display
 function deleteChar() {
     inputDisplay.textContent = inputDisplay.textContent.slice(0, inputDisplay.textContent.length - 1);
 }
@@ -32,40 +26,46 @@ function deleteChar() {
 const deleteBtn = document.querySelector('#DEL');
 deleteBtn.addEventListener('click', deleteChar);
 
-//PROCESSING the INPUT 
 function Operation(sign, fn) {
     this.sign = sign;
     this.fn = fn;
-};
+};//creating the MATH OPERATION function this way in order to use it with arrays and the convenient method 'reduce'
 
 const add = new Operation('+', (a, b) => a + b);
 const subtract = new Operation('-', (a, b) => a - b);
 const multiply = new Operation('x', (a, b) => a * b);
 const divide = new Operation('/', (a, b) => a / b);
-const operations = [multiply, divide, add, subtract];
+const operations = [multiply, divide, add, subtract]; //putting the MATH objects in array to make it easier to iterate which 'sign' is used in the INPUT
+
 const equalBtn = document.querySelector('#equal');
 equalBtn.addEventListener('click', operate);
 
-//CREATE functions that does mathematical operations on 2 numbers
+
 function operate() {
     const inputStr = inputDisplay.textContent;
+
     if (inputStr.includes('(') || inputStr.includes(')')) {
         let startInd;
         let endInd;
         let calcStr = '';
         const inputArr = inputStr.split('');
+        //loopCount to make sure that the loop runs as much as there are brackets in the INPUT
         const loopCount = inputArr.filter((item) => item === '(').length;
 
+
+        //using j instead of i because in the function calculate i is being reduce everytime there is a multiplication or division
         for (j = 0; j < loopCount; j++) {
             if (j === 0) {
+                //calculating the result of the str inside the bracket and passing it back into the input str
                 startInd = inputArr.indexOf('(');
                 endInd = inputArr.indexOf(')');
                 const subCalcStr = inputArr.slice(startInd+1, endInd).join('');
                 const deleteCount = inputArr.slice(startInd, endInd+1).length
-                const result = calculate(subCalcStr);
+                const result = calculate(subCalcStr); 
                 inputArr.splice(startInd, deleteCount, result);
                 calcStr = inputArr.join('');
             } else {
+                //if there is more than one bracket, the new str that was produced above needs to be split instead of the input str
                 const calcArr = calcStr.split('');
                 startInd = calcArr.indexOf('(');
                 endInd = calcArr.indexOf(')');
@@ -84,13 +84,15 @@ function operate() {
 
 function calculate (str) {
     const signs = operations.map((item) => item.sign);
+    //a verbose way of splitting the str argument because I dont know regex 
     const inputArr = str.split('+').join(',').split('-').join(',').split('x').join(',').split('/').join(',').split(',');
     const numArr = inputArr.map((item) => +item);
     //count how many times is there an operation
     const opArr = str.split('').filter((item) => signs.includes(item));
     let opFn;
-    let aboveLoopCount = 0;
+    let aboveLoopCount = 0; //this is to offset the i val in the loop to be 0 so that the addition or subtraction algo can run properly
     for (i = 0; i < opArr.length; i++) {
+        //making sure that multiplication or division is conducted first
         if (opArr.includes('x') || opArr.includes(`/`)) {
             if (opArr[i] === 'x' || opArr[i] === '/') {
                 operations.forEach((item) => {
@@ -104,9 +106,10 @@ function calculate (str) {
                 numArr.splice(i, 2 ,result);
                 opArr.splice(i, 1);
                 aboveLoopCount++;
-                i--; //where the magic happens
+                i--; //after deleting the element of opArr above, the i value must be decremented to match the current array length
             }
         } else {
+            //because we delete multiplication and division signs from opArr, the addition or subtraction will automatically move to index 0, so we must reset the loopcount to 0
             if (aboveLoopCount > 0) {
                 i = 0;
                 aboveLoopCount = 0;
