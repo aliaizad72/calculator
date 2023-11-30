@@ -1,8 +1,11 @@
 const inputDisplay = document.querySelector('#input-display');
 const outputDisplay = document.querySelector('#output-display');
+let answerCount = 0;
+
 clearInput(); //clearing INPUT div so it does not return weird text with spaces and newlines
 
 function clearInput () {
+    answerCount = 0;
     inputDisplay.textContent = '';
     outputDisplay.textContent = '';
 }
@@ -11,9 +14,15 @@ const clearBtn = document.querySelector('#AC');
 clearBtn.addEventListener('click', clearInput);
 
 const inputButtons = document.querySelectorAll('.input-buttons');
+const mathButtons = document.querySelectorAll('.math-buttons');
+
 inputButtons.forEach((button) => {
     button.addEventListener('click', addInput);
-})
+});
+
+mathButtons.forEach((button) => {
+    button.addEventListener('click', addInput);
+});
 
 function addInput(e) {
     inputDisplay.textContent += `${e.target.textContent}`;
@@ -42,45 +51,62 @@ const operations = [multiply, divide, multiplyNegative, divideNegative, add, sub
 const equalBtn = document.querySelector('#equal');
 equalBtn.addEventListener('click', operate);
 
-
 function operate() {
-    const inputStr = inputDisplay.textContent;
+    let inputStr = inputDisplay.textContent;
 
-    if (inputStr.includes('(') || inputStr.includes(')')) {
-        let startInd;
-        let endInd;
-        let calcStr = '';
-        const inputArr = inputStr.split('');
-        //loopCount to make sure that the loop runs as much as there are brackets in the INPUT
-        const loopCount = inputArr.filter((item) => item === '(').length;
-
-
-        //using j instead of i because in the function calculate i is being reduce everytime there is a multiplication or division
-        for (j = 0; j < loopCount; j++) {
-            if (j === 0) {
-                //calculating the result of the str inside the bracket and passing it back into the input str
-                startInd = inputArr.indexOf('(');
-                endInd = inputArr.indexOf(')');
-                const subCalcStr = inputArr.slice(startInd+1, endInd).join('');
-                const deleteCount = inputArr.slice(startInd, endInd+1).length
-                const result = calculate(subCalcStr); 
-                inputArr.splice(startInd, deleteCount, result);
-                calcStr = inputArr.join('');
+    if (answerCount > 0) {
+        inputStr = outputDisplay.textContent;
+        inputDisplay.textContent = inputStr;
+        answerCount = 0;
+    } else {
+        if (inputStr.includes('(') || inputStr.includes(')')) {
+            let startInd;
+            let endInd;
+            let calcStr = '';
+            const inputArr = inputStr.split('');
+            //loopCount to make sure that the loop runs as much as there are brackets in the INPUT
+            const loopCount = inputArr.filter((item) => item === '(').length;
+    
+    
+            //using j instead of i because in the function calculate i is being reduce everytime there is a multiplication or division
+            for (j = 0; j < loopCount; j++) {
+                if (j === 0) {
+                    //calculating the result of the str inside the bracket and passing it back into the input str
+                    startInd = inputArr.indexOf('(');
+                    endInd = inputArr.indexOf(')');
+                    const subCalcStr = inputArr.slice(startInd+1, endInd).join('');
+                    const deleteCount = inputArr.slice(startInd, endInd+1).length
+                    const result = calculate(subCalcStr); 
+                    inputArr.splice(startInd, deleteCount, result);
+                    calcStr = inputArr.join('');
+                } else {
+                    //if there is more than one bracket, the new str that was produced above needs to be split instead of the input str
+                    const calcArr = calcStr.split('');
+                    startInd = calcArr.indexOf('(');
+                    endInd = calcArr.indexOf(')');
+                    const subCalcStr = calcArr.slice(startInd+1, endInd).join('');
+                    const deleteCount = calcArr.slice(startInd, endInd+1).length
+                    const result = calculate(subCalcStr);
+                    calcArr.splice(startInd, deleteCount, result);
+                    calcStr = calcArr.join('');
+                }
+            }
+            if (Number.isNaN(calculate(calcStr))) {
+                outputDisplay.textContent = 'ERROR!'
+                answerCount = 0;
             } else {
-                //if there is more than one bracket, the new str that was produced above needs to be split instead of the input str
-                const calcArr = calcStr.split('');
-                startInd = calcArr.indexOf('(');
-                endInd = calcArr.indexOf(')');
-                const subCalcStr = calcArr.slice(startInd+1, endInd).join('');
-                const deleteCount = calcArr.slice(startInd, endInd+1).length
-                const result = calculate(subCalcStr);
-                calcArr.splice(startInd, deleteCount, result);
-                calcStr = calcArr.join('');
+                outputDisplay.textContent = calculate(calcStr);
+                answerCount++;
+            }
+        } else {
+            if (Number.isNaN(calculate(inputStr))) {
+                outputDisplay.textContent = 'ERROR!'
+                answerCount = 0;
+            } else {
+                outputDisplay.textContent = calculate(inputStr);
+                answerCount++;
             }
         }
-        console.log(calculate(calcStr));
-    } else {
-        console.log(calculate(inputStr));
     }
 };
 
@@ -103,8 +129,6 @@ function calculate (str) {
                     strArr.splice(index + 1, 1);
                 } else if (item === '-' && strArr[index + 1 ] === '+') {
                     strArr.splice(index + 1, 1);
-                } else {
-                    strArr.splice(index, 1, 'errrrrrrorrrrr');
                 }
             }
         }
@@ -116,13 +140,14 @@ function calculate (str) {
     const numArr = inputArr.map((item) => +item);
     let opArr = str.split('').filter((item) => signs.includes(item));
     opArr.forEach((item, index) => {
-        if (item === 'x' && opArr[index+1] === '-') {
-            opArr.splice(index, 2, 'x-');
-        } else if (item === '/' && opArr[index+1] === '-') {
-            opArr.splice(index, 2, '/-');
+        if (opArr.length === numArr.length) {
+            if (item === 'x' && opArr[index+1] === '-') {
+                opArr.splice(index, 2, 'x-');
+            } else if (item === '/' && opArr[index+1] === '-') {
+                opArr.splice(index, 2, '/-');
+            }
         }
     })
-    console.log(inputArr, opArr);
     let opFn;
     let aboveLoopCount = 0; //this is to offset the i val in the loop to be 0 so that the addition or subtraction algo can run properly
     for (i = 0; i < opArr.length; i++) {
