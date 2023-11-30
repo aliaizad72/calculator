@@ -35,7 +35,9 @@ const add = new Operation('+', (a, b) => a + b);
 const subtract = new Operation('-', (a, b) => a - b);
 const multiply = new Operation('x', (a, b) => a * b);
 const divide = new Operation('/', (a, b) => a / b);
-const operations = [multiply, divide, add, subtract]; //putting the MATH objects in array to make it easier to iterate which 'sign' is used in the INPUT
+const multiplyNegative = new Operation('x-', (a, b) => -a*b);
+const divideNegative = new Operation('/-', (a, b) => -1*(a/b))
+const operations = [multiply, divide, multiplyNegative, divideNegative, add, subtract]; //putting the MATH objects in array to make it easier to iterate which 'sign' is used in the INPUT
 
 const equalBtn = document.querySelector('#equal');
 equalBtn.addEventListener('click', operate);
@@ -87,27 +89,46 @@ function calculate (str) {
     //check for two signs in a row
     const strArr = str.split('');
     strArr.forEach((item, index) => {
-        if (isNaN(+item) && (item === strArr[index + 1] || item === strArr[index - 1])) {
-            if (item != '-') {
-                strArr.splice(index, 1);
-            } else {
-                strArr.splice(index, 2, '+');
+        if (signs.includes(item)) {
+            if (item === strArr[index + 1]) {
+                if (item === '+') {
+                    strArr.splice(index, 1);
+                } else if (item === '-') {
+                    strArr.splice(index, 2, '+');
+                } else {
+                    strArr.splice(index, 1, 'errrrrrrorrrrr');
+                }
+            } else if (item != strArr[index + 1]) {
+                if ((item === 'x' || item === '/') && strArr[index + 1] === '+') {
+                    strArr.splice(index + 1, 1);
+                } else if (item === '-' && strArr[index + 1 ] === '+') {
+                    strArr.splice(index + 1, 1);
+                } else {
+                    strArr.splice(index, 1, 'errrrrrrorrrrr');
+                }
             }
         }
     })
     str = strArr.join('');
 
     //a verbose way of splitting the str argument because I dont know regex 
-    const inputArr = str.split('+').join(',').split('-').join(',').split('x').join(',').split('/').join(',').split(',');
+    const inputArr = str.split('x-').join(',').split('/-').join(',').split('+').join(',').split('-').join(',').split('x').join(',').split('/').join(',').split(',');
     const numArr = inputArr.map((item) => +item);
-    //count how many times is there an operation
-    const opArr = str.split('').filter((item) => signs.includes(item));
+    let opArr = str.split('').filter((item) => signs.includes(item));
+    opArr.forEach((item, index) => {
+        if (item === 'x' && opArr[index+1] === '-') {
+            opArr.splice(index, 2, 'x-');
+        } else if (item === '/' && opArr[index+1] === '-') {
+            opArr.splice(index, 2, '/-');
+        }
+    })
+    console.log(inputArr, opArr);
     let opFn;
     let aboveLoopCount = 0; //this is to offset the i val in the loop to be 0 so that the addition or subtraction algo can run properly
     for (i = 0; i < opArr.length; i++) {
         //making sure that multiplication or division is conducted first
-        if (opArr.includes('x') || opArr.includes(`/`)) {
-            if (opArr[i] === 'x' || opArr[i] === '/') {
+        if (opArr.includes('x') || opArr.includes(`/`) || opArr.includes('x-') || opArr.includes('/-')) {
+            if (opArr[i] === 'x' || opArr[i] === '/' || opArr[i] === 'x-' || opArr[i] === '/-') {
                 operations.forEach((item) => {
                     if (item.sign === opArr[i]) {
                         opFn = item.fn;
