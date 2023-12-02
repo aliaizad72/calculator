@@ -186,5 +186,23 @@ function calculate (str) {
             numArr.splice(0, 2, result);
         }
     }
-    return (numArr[0]);
+    let answer = numArr[0];
+    if (!Number.isInteger(answer)) {
+        answer = roundDecimals(answer);
+        return answer;
+    }  else {
+        return answer;
+    }
+}
+
+function roundDecimals(number) {
+    if (number === Infinity) {
+        return number;
+    }
+    
+    const decVal = number.toString().split('.');
+    if (decVal[1].length > 8) {
+        decVal[1] = decVal[1].substr(0, 9);
+    }
+    return +decVal.join('.');
 }
