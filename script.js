@@ -1,11 +1,9 @@
 const inputDisplay = document.querySelector('#input-display');
 const outputDisplay = document.querySelector('#output-display');
-let answerCount = 0;
 
 clearInput(); //clearing INPUT div so it does not return weird text with spaces and newlines
 
 function clearInput () {
-    answerCount = 0;
     inputDisplay.textContent = '';
     outputDisplay.textContent = '';
 }
@@ -21,11 +19,20 @@ inputButtons.forEach((button) => {
 });
 
 mathButtons.forEach((button) => {
-    button.addEventListener('click', addInput);
+    button.addEventListener('click', addMathInput);
 });
 
 function addInput(e) {
     inputDisplay.textContent += `${e.target.textContent}`;
+}
+
+function addMathInput(e) {
+    if (outputDisplay.textContent) {
+        inputDisplay.textContent = outputDisplay.textContent + `${e.target.textContent}`;
+        outputDisplay.textContent = '';
+    } else {
+        inputDisplay.textContent += `${e.target.textContent}`;
+    }
 }
 
 function deleteChar() {
@@ -53,11 +60,9 @@ equalBtn.addEventListener('click', operate);
 
 function operate() {
     let inputStr = inputDisplay.textContent;
-
-    if (answerCount > 0) {
-        inputStr = outputDisplay.textContent;
-        inputDisplay.textContent = inputStr;
-        answerCount = 0;
+    if (outputDisplay.textContent) {
+        inputDisplay.textContent = outputDisplay.textContent;
+        outputDisplay.textContent = '';
     } else {
         if (inputStr.includes('(') || inputStr.includes(')')) {
             let startInd;
@@ -93,18 +98,14 @@ function operate() {
             }
             if (Number.isNaN(calculate(calcStr))) {
                 outputDisplay.textContent = 'ERROR!'
-                answerCount = 0;
             } else {
                 outputDisplay.textContent = calculate(calcStr);
-                answerCount++;
             }
         } else {
             if (Number.isNaN(calculate(inputStr))) {
                 outputDisplay.textContent = 'ERROR!'
-                answerCount = 0;
             } else {
                 outputDisplay.textContent = calculate(inputStr);
-                answerCount++;
             }
         }
     }
@@ -112,7 +113,7 @@ function operate() {
 
 function calculate (str) {
     const signs = operations.map((item) => item.sign);
-    //check for two signs in a row
+    //checking for two signs in a row
     const strArr = str.split('');
     strArr.forEach((item, index) => {
         if (signs.includes(item)) {
@@ -139,6 +140,7 @@ function calculate (str) {
     const inputArr = str.split('x-').join(',').split('/-').join(',').split('+').join(',').split('-').join(',').split('x').join(',').split('/').join(',').split(',');
     const numArr = inputArr.map((item) => +item);
     let opArr = str.split('').filter((item) => signs.includes(item));
+    //make sure that division and multiplication by negative number sign registers on opARR
     opArr.forEach((item, index) => {
         if (opArr.length === numArr.length) {
             if (item === 'x' && opArr[index+1] === '-') {
@@ -165,7 +167,7 @@ function calculate (str) {
                 numArr.splice(i, 2 ,result);
                 opArr.splice(i, 1);
                 aboveLoopCount++;
-                i = -1; //after deleting the element of opArr above, the i value must be decremented to match the current array length; -2 because when the loop loops it adds 1 so in the end it goes back 1 step
+                i = -1; //after deleting the element of opArr above, the i value must be decremented to -1 so when the loop iterates it becomes 0
             }
         } else {
             //because we delete multiplication and division signs from opArr, the addition or subtraction will automatically move to index 0, so we must reset the loopcount to 0
