@@ -12,23 +12,44 @@ const clearBtn = document.querySelector('#AC');
 clearBtn.addEventListener('click', clearInput);
 
 const inputButtons = document.querySelectorAll('.input-buttons');
-//parsed into array to map the contents; easier to add keyboard 
-const inputButtonsArr = Array.from(inputButtons).map((item) => item.textContent);
+inputButtons.forEach((button) => {
+    button.addEventListener('click', addInput);
+});
+
+function addInput(e) {
+    inputDisplay.textContent += `${e.target.textContent}`;
+}
+
 const mathButtons = document.querySelectorAll('.math-buttons');
-const mathButtonsArr = Array.from(mathButtons).map((item) => item.textContent);
+mathButtons.forEach((button) => {
+    button.addEventListener('click', addMathInput);
+});
+
+function addMathInput(e) {
+    if (outputDisplay.textContent) {
+        inputDisplay.textContent = outputDisplay.textContent + `${e.target.textContent}`;
+        outputDisplay.textContent = '';
+    } else {
+        inputDisplay.textContent += `${e.target.textContent}`;
+    }
+}
+
+const deleteBtn = document.querySelector('#DEL');
+deleteBtn.addEventListener('click', deleteChar);
+
+function deleteChar() {
+    inputDisplay.textContent = inputDisplay.textContent.slice(0, inputDisplay.textContent.length - 1);
+}
+
 //add audio on button click
 const clickSound = new Audio('click.mp3');
 
 const buttons = document.querySelectorAll('button');
 buttons.forEach((button) => button.addEventListener('click', () => clickSound.play()));
 
-inputButtons.forEach((button) => {
-    button.addEventListener('click', addInput);
-});
-
-mathButtons.forEach((button) => {
-    button.addEventListener('click', addMathInput);
-});
+//parsed into array to map the contents; easier to add keyboard 
+const mathButtonsArr = Array.from(mathButtons).map((item) => item.textContent);
+const inputButtonsArr = Array.from(inputButtons).map((item) => item.textContent);
 
 document.addEventListener('keydown', addKey);
 
@@ -61,39 +82,20 @@ function addKey(e) {
         clickSound.play();
     }
 }
-
-function addInput(e) {
-    inputDisplay.textContent += `${e.target.textContent}`;
-}
-
-function addMathInput(e) {
-    if (outputDisplay.textContent) {
-        inputDisplay.textContent = outputDisplay.textContent + `${e.target.textContent}`;
-        outputDisplay.textContent = '';
-    } else {
-        inputDisplay.textContent += `${e.target.textContent}`;
-    }
-}
-
-function deleteChar() {
-    inputDisplay.textContent = inputDisplay.textContent.slice(0, inputDisplay.textContent.length - 1);
-}
-
-const deleteBtn = document.querySelector('#DEL');
-deleteBtn.addEventListener('click', deleteChar);
-
+//creating the MATH OPERATION function this way in order to use it with arrays and the convenient method 'reduce'
 function Operation(sign, fn) {
     this.sign = sign;
     this.fn = fn;
-};//creating the MATH OPERATION function this way in order to use it with arrays and the convenient method 'reduce'
+};
 
 const add = new Operation('+', (a, b) => a + b);
 const subtract = new Operation('-', (a, b) => a - b);
 const multiply = new Operation('x', (a, b) => a * b);
 const divide = new Operation('/', (a, b) => a / b);
 const multiplyNegative = new Operation('x-', (a, b) => -a*b);
-const divideNegative = new Operation('/-', (a, b) => -1*(a/b))
-const operations = [multiply, divide, multiplyNegative, divideNegative, add, subtract]; //putting the MATH objects in array to make it easier to iterate which 'sign' is used in the INPUT
+const divideNegative = new Operation('/-', (a, b) => -1*(a/b));
+//putting the MATH objects in array to make it easier to iterate which 'sign' is used in the INPUT
+const operations = [multiply, divide, multiplyNegative, divideNegative, add, subtract]; 
 
 const equalBtn = document.querySelector('#equal');
 equalBtn.addEventListener('click', operate);
@@ -104,6 +106,7 @@ function operate() {
         inputDisplay.textContent = outputDisplay.textContent;
         outputDisplay.textContent = '';
     } else {
+        //this whole bloc is to ensure expressions in brackets are calculated first
         if (inputStr.includes('(') || inputStr.includes(')')) {
             let startInd;
             let endInd;
@@ -113,7 +116,7 @@ function operate() {
             const loopCount = inputArr.filter((item) => item === '(').length;
     
     
-            //using j instead of i because in the function calculate i is being reduce everytime there is a multiplication or division
+            //using j instead of i because in the function calculate, i is being reduced everytime there is a multiplication or division
             for (j = 0; j < loopCount; j++) {
                 if (j === 0) {
                     //calculating the result of the str inside the bracket and passing it back into the input str
@@ -180,7 +183,7 @@ function calculate (str) {
     const inputArr = str.split('x-').join(',').split('/-').join(',').split('+').join(',').split('-').join(',').split('x').join(',').split('/').join(',').split(',');
     const numArr = inputArr.map((item) => +item);
     let opArr = str.split('').filter((item) => signs.includes(item));
-    //make sure that division and multiplication by negative number sign registers on opARR
+    //make sure that division and multiplication by negative number sign registers 
     opArr.forEach((item, index) => {
         if (opArr.length === numArr.length) {
             if (item === 'x' && opArr[index+1] === '-') {
