@@ -12,7 +12,10 @@ const clearBtn = document.querySelector('#AC');
 clearBtn.addEventListener('click', clearInput);
 
 const inputButtons = document.querySelectorAll('.input-buttons');
+//parsed into array to map the contents; easier to add keyboard 
+const inputButtonsArr = Array.from(inputButtons).map((item) => item.textContent);
 const mathButtons = document.querySelectorAll('.math-buttons');
+const mathButtonsArr = Array.from(mathButtons).map((item) => item.textContent);
 
 inputButtons.forEach((button) => {
     button.addEventListener('click', addInput);
@@ -21,6 +24,31 @@ inputButtons.forEach((button) => {
 mathButtons.forEach((button) => {
     button.addEventListener('click', addMathInput);
 });
+
+document.addEventListener('keydown', addKey);
+
+function addKey(e) {
+    if (inputButtonsArr.includes(e.key)) {
+        e.preventDefault();
+        inputDisplay.textContent += e.key;
+    } else if (e.key === '*') {
+        inputDisplay.textContent += 'x'
+    } else if (mathButtonsArr.includes(e.key)) {
+        e.preventDefault();
+        if (outputDisplay.textContent) {
+            inputDisplay.textContent = outputDisplay.textContent + `${e.key}`;
+            outputDisplay.textContent = '';
+        } else {
+            inputDisplay.textContent += `${e.key}`;
+        }
+    } else if (e.key === 'Backspace') {
+        inputDisplay.textContent = inputDisplay.textContent.slice(0, inputDisplay.textContent.length - 1);
+    } else if (e.key === 'Escape') {
+        clearInput();
+    } else if (e.key === 'Enter' || e.key === '=') {
+        operate()
+    }
+}
 
 function addInput(e) {
     inputDisplay.textContent += `${e.target.textContent}`;
@@ -199,7 +227,7 @@ function roundDecimals(number) {
     if (number === Infinity) {
         return number;
     }
-    
+
     const decVal = number.toString().split('.');
     if (decVal[1].length > 8) {
         decVal[1] = decVal[1].substr(0, 9);
