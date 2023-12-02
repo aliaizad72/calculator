@@ -16,6 +16,11 @@ const inputButtons = document.querySelectorAll('.input-buttons');
 const inputButtonsArr = Array.from(inputButtons).map((item) => item.textContent);
 const mathButtons = document.querySelectorAll('.math-buttons');
 const mathButtonsArr = Array.from(mathButtons).map((item) => item.textContent);
+//add audio on button click
+const clickSound = new Audio('click.mp3');
+
+const buttons = document.querySelectorAll('button');
+buttons.forEach((button) => button.addEventListener('click', () => clickSound.play()));
 
 inputButtons.forEach((button) => {
     button.addEventListener('click', addInput);
@@ -31,22 +36,29 @@ function addKey(e) {
     if (inputButtonsArr.includes(e.key)) {
         e.preventDefault();
         inputDisplay.textContent += e.key;
+        clickSound.play();
     } else if (e.key === '*') {
         inputDisplay.textContent += 'x'
+        clickSound.play();
     } else if (mathButtonsArr.includes(e.key)) {
         e.preventDefault();
         if (outputDisplay.textContent) {
             inputDisplay.textContent = outputDisplay.textContent + `${e.key}`;
             outputDisplay.textContent = '';
+            clickSound.play();
         } else {
             inputDisplay.textContent += `${e.key}`;
+            clickSound.play();
         }
     } else if (e.key === 'Backspace') {
         inputDisplay.textContent = inputDisplay.textContent.slice(0, inputDisplay.textContent.length - 1);
+        clickSound.play();
     } else if (e.key === 'Escape') {
         clearInput();
+        clickSound.play();
     } else if (e.key === 'Enter' || e.key === '=') {
         operate()
+        clickSound.play();
     }
 }
 
